@@ -3,6 +3,7 @@ from mailcap import subst
 import numpy as np
 from nltk import conflicts
 from nltk.misc.chomsky import subjects
+from sympy.physics.units import hours
 
 np.random.seed(1234567890)
 
@@ -115,6 +116,7 @@ def calculate_c1(solution, *args, **kwargs):
 def calculate_c2(solution, *args, **kwargs):
     dataset = kwargs['dataset']
     timetable = create_timetable(solution, dataset)
+    hours = 0
 
     if dataset['n_hours_day'] <= 2:
         return 0
@@ -127,10 +129,12 @@ def calculate_c2(solution, *args, **kwargs):
             for i in range(dataset['n_days']):
                 if subject in timetable[i][j]:
                     n_hours_per_subject_day += 1
+                    if n_hours_per_subject_day > 2:
+                        hours += 1
 
     # Calcula la cantidad de horas por encima de 2 que se imparten
     # de una misma asignatura en un mismo día
-    return None
+    return hours
 
 def calculate_p1(solution, *args, **kwargs):
     dataset = kwargs['dataset']
