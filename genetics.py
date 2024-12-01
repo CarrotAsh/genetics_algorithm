@@ -1,4 +1,5 @@
 import numpy as np
+from nltk import conflicts
 
 np.random.seed(1234567890)
 
@@ -98,13 +99,14 @@ def create_timetable(solution, dataset): #Crea una matriz con el num de asignatu
 
 def calculate_c1(solution, *args, **kwargs):
     dataset = kwargs['dataset']
-    counts = {}
     conflicts = 0
-    for i in solution:
-        if counts.get(i):
-            conflicts += 1
-        else:
-            counts[i] = 1
+    timetable = create_timetable(solution, dataset)
+
+    for row in timetable:
+        for value in row:
+            if len(value) > 1:
+                conflicts += 1
+
     return conflicts
 
     # Calcula la cantidad de asignaturas que se imparten en mismas franjas horarias
