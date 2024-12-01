@@ -15,9 +15,21 @@ def generate_random_array_int(alphabet, length):
 
 def generate_initial_population_timetabling(pop_size, *args, **kwargs):
     dataset = kwargs['dataset'] # Dataset con la misma estructura que el ejemplo
+    dataset = kwargs['dataset']
+    n_courses = dataset['n_courses']
+    n_days = dataset['n_days']
+    n_hours_day = dataset['n_hours_day']
+    courses = dataset['courses']
+
+    total_slots = n_days * n_hours_day
+    alphabet = list(range(total_slots))
+
+    individual_length = sum(hours for _, hours in courses)
+
+    population = [generate_random_array_int(alphabet, individual_length) for _ in range(pop_size)]
     # Obtener el alfabeto y la longitud a partir del dataset
     # Genera una población inicial de tamaño pop_size
-    return None
+    return population
 
 ################################# NO TOCAR #################################
 #                                                                          #
