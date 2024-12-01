@@ -1,3 +1,6 @@
+import numpy as np
+np.random.seed(1234567890)
+
 # Ejemplo de dataset de entrada para el problema de asignación de horarios
 dataset = {"n_courses" : 3,
            "n_days" : 3,
@@ -5,9 +8,10 @@ dataset = {"n_courses" : 3,
            "courses" : [("IA", 1), ("ALG", 2), ("BD", 3)]}
 
 def generate_random_array_int(alphabet, length):
+    indices = np.random.randint(0, len(alphabet), length)
+    return np.array(alphabet)[indices]
     # Genera un array de enteros aleatorios de tamaño length
     # usando el alfabeto dado
-    return None
 
 def generate_initial_population_timetabling(pop_size, *args, **kwargs):
     dataset = kwargs['dataset'] # Dataset con la misma estructura que el ejemplo
@@ -92,6 +96,7 @@ def fitness_timetabling(solution, *args, **kwargs):
     # Calcula el fitness de una solución de timetabling siguiendo la fórmula del enunciado
     return None
 
+'''
 # Pistas:
 # - Una función que devuelva la tabla de horarios de una solución
 # - Una función que devuelva la cantidad de horas por día de cada asignatura
@@ -321,3 +326,4 @@ launch_experiment(seeds, dataset1, generate_initial_population_timetabling, 50, 
 ### Coloca aquí tus experimentos ###
 
 ### Coloca aquí tus experimentos ###
+'''
