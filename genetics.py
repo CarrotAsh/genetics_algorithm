@@ -1,4 +1,5 @@
 import numpy as np
+
 np.random.seed(1234567890)
 
 # Ejemplo de dataset de entrada para el problema de asignación de horarios
@@ -77,8 +78,16 @@ print_timetabling_solution(candidate, dataset)
 
 def calculate_c1(solution, *args, **kwargs):
     dataset = kwargs['dataset']
+    counts = {}
+    conflicts = 0
+    for i in solution:
+        if counts.get(i):
+            conflicts += 1
+        else:
+            counts[i] = 1
+    return conflicts
+
     # Calcula la cantidad de asignaturas que se imparten en mismas franjas horarias
-    return None
 
 def calculate_c2(solution, *args, **kwargs):
     dataset = kwargs['dataset']
