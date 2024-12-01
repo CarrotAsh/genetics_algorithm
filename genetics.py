@@ -1,5 +1,8 @@
+from mailcap import subst
+
 import numpy as np
 from nltk import conflicts
+from nltk.misc.chomsky import subjects
 
 np.random.seed(1234567890)
 
@@ -109,11 +112,21 @@ def calculate_c1(solution, *args, **kwargs):
 
     return conflicts
 
-    # Calcula la cantidad de asignaturas que se imparten en mismas franjas horarias
-
 def calculate_c2(solution, *args, **kwargs):
     dataset = kwargs['dataset']
     timetable = create_timetable(solution, dataset)
+
+    if dataset['n_hours_day'] <= 2:
+        return 0
+
+    for course in dataset['courses']:
+        subject = course[0]
+
+        for j in range(dataset['n_hours_day']):
+            n_hours_per_subject_day = 0
+            for i in range(dataset['n_days']):
+                if subject in timetable[i][j]:
+                    n_hours_per_subject_day += 1
 
     # Calcula la cantidad de horas por encima de 2 que se imparten
     # de una misma asignatura en un mismo día
