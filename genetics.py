@@ -80,12 +80,19 @@ def create_timetable(solution, dataset): #Crea una matriz con el num de asignatu
     n_hours_day = dataset['n_hours_day']
     n_days = dataset['n_days']
 
-    timetable = np.zeros((n_hours_day, n_days))
+    timetable = np.empty((n_hours_day, n_days) , dtype=object)
+    for i in range(n_days):
+        for j in range(n_hours_day):
+            timetable[i][j] = []
 
-    for value in solution:
-        day = value // n_hours_day
-        hour = value % n_hours_day
-        timetable[day][hour] += 1
+    i = 0
+    for course in dataset['courses']:
+        n_hours_subject = course[1]
+        for _ in range(n_hours_subject):
+            day = solution[i] // n_hours_day
+            hour = solution[i] % n_hours_day
+            timetable[hour][day].append(course[0])
+            i += 1
 
     return timetable
 
@@ -102,13 +109,10 @@ def calculate_c1(solution, *args, **kwargs):
 
     # Calcula la cantidad de asignaturas que se imparten en mismas franjas horarias
 
-'''dataset = {"n_courses" : 3,
-           "n_days" : 3,
-           "n_hours_day" : 3,
-           "courses" : [("IA", 1), ("ALG", 2), ("BD", 3)]}'''
-
 def calculate_c2(solution, *args, **kwargs):
     dataset = kwargs['dataset']
+    timetable = create_timetable(solution, dataset)
+
     # Calcula la cantidad de horas por encima de 2 que se imparten
     # de una misma asignatura en un mismo día
     return None
@@ -133,14 +137,13 @@ def fitness_timetabling(solution, *args, **kwargs):
     # Calcula el fitness de una solución de timetabling siguiendo la fórmula del enunciado
     return None
 
-'''
 # Pistas:
 # - Una función que devuelva la tabla de horarios de una solución
 # - Una función que devuelva la cantidad de horas por día de cada asignatura
 # - A través de args y kwargs se pueden pasar argumentos adicionales que vayamos a necesitar
 
 fitness_timetabling(candidate, dataset=dataset) # Devuelve la fitness del candidato de ejemplo
-
+'''
 def tournament_selection(population, fitness, number_parents, *args, **kwargs):
     t = kwargs['tournament_size'] # Tamaño del torneo
     # Selecciona number_parents individuos de la población mediante selección por torneo
