@@ -76,6 +76,19 @@ def print_timetabling_solution(solution, dataset):
 candidate = generate_random_array_int(list(range(9)), 6)
 print_timetabling_solution(candidate, dataset)
 
+def create_timetable(solution, dataset): #Crea una matriz con el num de asignaturas en cada franja horaria
+    n_hours_day = dataset['n_hours_day']
+    n_days = dataset['n_days']
+
+    timetable = np.zeros((n_hours_day, n_days))
+
+    for value in solution:
+        day = value // n_hours_day
+        hour = value % n_hours_day
+        timetable[day][hour] += 1
+
+    return timetable
+
 def calculate_c1(solution, *args, **kwargs):
     dataset = kwargs['dataset']
     counts = {}
@@ -88,6 +101,11 @@ def calculate_c1(solution, *args, **kwargs):
     return conflicts
 
     # Calcula la cantidad de asignaturas que se imparten en mismas franjas horarias
+
+'''dataset = {"n_courses" : 3,
+           "n_days" : 3,
+           "n_hours_day" : 3,
+           "courses" : [("IA", 1), ("ALG", 2), ("BD", 3)]}'''
 
 def calculate_c2(solution, *args, **kwargs):
     dataset = kwargs['dataset']
