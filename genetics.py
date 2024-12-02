@@ -1,9 +1,4 @@
-from mailcap import subst
-
 import numpy as np
-from nltk import conflicts
-from nltk.misc.chomsky import subjects
-from sympy.physics.units import hours
 
 np.random.seed(1234567890)
 
