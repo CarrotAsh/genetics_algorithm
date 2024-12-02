@@ -133,13 +133,33 @@ def calculate_c2(solution, *args, **kwargs):
 
 def calculate_p1(solution, *args, **kwargs):
     dataset = kwargs['dataset']
+    timetable = create_timetable(solution, dataset)
+    empty_slots = 0
+    found_class = False
+    for row in timetable:
+        found_class = False
+        for value in row:
+            if len(value) >=1:
+                found_class = True
+            if len(value) == 0 and found_class:
+                empty_slots += 1
+                found_class = False
     # Calcula el número de huecos vacíos entre asignaturas
-    return None
+    return empty_slots
 
 def calculate_p2(solution, *args, **kwargs):
     dataset = kwargs['dataset']
+    timetable = create_timetable(solution, dataset)
+    days_used = 0
+
+    for j in range(timetable.shape[1]):
+        for i in range(timetable.shape[0]):
+            if len(timetable[i][j]) >=1:
+                break
+        days_used += 1
+
     # Calcula el número de días utilizados en los horarios
-    return None
+    return days_used
 
 def calculate_p3(solution, *args, **kwargs):
     dataset = kwargs['dataset']
