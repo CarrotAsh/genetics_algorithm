@@ -137,21 +137,24 @@ def calculate_c2(solution, *args, **kwargs):
     # de una misma asignatura en un mismo día
     return hours
 
-def calculate_p1(solution, *args, **kwargs): #DA FALLOS
+def calculate_p1(solution, *args, **kwargs):
     dataset = kwargs['dataset']
-    timetable = create_timetable(solution, dataset)
-    empty_slots = 0
-    found_class = False
-    for row in timetable:
-        found_class = False
-        for value in row:
-            if len(value) >=1:
-                found_class = True
-            if len(value) == 0 and found_class:
-                empty_slots += 1
-                found_class = False
     # Calcula el número de huecos vacíos entre asignaturas
-    return empty_slots
+    timetable = create_timetable(solution, dataset)
+
+    n_days = dataset['n_days']
+    n_hours_day = dataset['n_hours_day']
+    gaps = 0
+
+    for day in range(n_days):
+        day_schedule = [len(timetable[hour][day]) > 0 for hour in range(n_hours_day)]
+
+        if any(day_schedule):
+            first_occupied = day_schedule.index(True)
+            last_occupied = len(day_schedule) - 1 - day_schedule[::-1].index(True)
+            gaps += sum(1 for i in range(first_occupied, last_occupied + 1) if not day_schedule[i])
+
+    return gaps
 
 def calculate_p2(solution, *args, **kwargs): #DA FALLOS
     dataset = kwargs['dataset']
@@ -161,17 +164,38 @@ def calculate_p2(solution, *args, **kwargs): #DA FALLOS
     for j in range(timetable.shape[1]):
         for i in range(timetable.shape[0]):
             if len(timetable[i][j]) >=1:
+                days_used += 1
                 break
-        days_used += 1
 
     # Calcula el número de días utilizados en los horarios
     return days_used
 
 def calculate_p3(solution, *args, **kwargs):
     dataset = kwargs['dataset']
-    timetable = create_timetable(solution, dataset)
     # Calcula el número de asignaturas con horas NO consecutivas en un mismo día
-    return None
+    timetable = create_timetable(solution, dataset)
+
+    n_days = dataset['n_days']
+    n_hours_day = dataset['n_hours_day']
+    non_consecutive_count = 0
+
+    # Recorrer cada asignatura
+    for course, _ in dataset['courses']:
+        # Revisar cada día
+        for day in range(n_days):
+            day_schedule = [course in timetable[hour][day] for hour in range(n_hours_day)]
+
+            if any(day_schedule):  # Si la asignatura está presente ese día
+                # Encontrar el rango ocupado
+                first_occupied = day_schedule.index(True)
+                last_occupied = len(day_schedule) - 1 - day_schedule[::-1].index(True)
+
+                # Verificar si hay huecos dentro del rango ocupado
+                if any(not day_schedule[i] for i in range(first_occupied, last_occupied + 1)):
+                    non_consecutive_count += 1
+
+
+    return non_consecutive_count
 
 def fitness_timetabling(solution, *args, **kwargs):
     dataset = kwargs['dataset']
