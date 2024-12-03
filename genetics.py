@@ -139,7 +139,6 @@ def calculate_c2(solution, *args, **kwargs):
 
 def calculate_p1(solution, *args, **kwargs):
     dataset = kwargs['dataset']
-    # Calcula el número de huecos vacíos entre asignaturas
     timetable = create_timetable(solution, dataset)
 
     n_days = dataset['n_days']
@@ -154,6 +153,8 @@ def calculate_p1(solution, *args, **kwargs):
             last_occupied = len(day_schedule) - 1 - day_schedule[::-1].index(True)
             gaps += sum(1 for i in range(first_occupied, last_occupied + 1) if not day_schedule[i])
 
+    # Calcula el número de huecos vacíos entre asignaturas
+
     return gaps
 
 def calculate_p2(solution, *args, **kwargs): #DA FALLOS
@@ -164,15 +165,14 @@ def calculate_p2(solution, *args, **kwargs): #DA FALLOS
     for j in range(timetable.shape[1]):
         for i in range(timetable.shape[0]):
             if len(timetable[i][j]) >=1:
-                days_used += 1
                 break
 
+            days_used += 1
     # Calcula el número de días utilizados en los horarios
     return days_used
 
 def calculate_p3(solution, *args, **kwargs):
     dataset = kwargs['dataset']
-    # Calcula el número de asignaturas con horas NO consecutivas en un mismo día
     timetable = create_timetable(solution, dataset)
 
     n_days = dataset['n_days']
@@ -194,7 +194,7 @@ def calculate_p3(solution, *args, **kwargs):
                 if any(not day_schedule[i] for i in range(first_occupied, last_occupied + 1)):
                     non_consecutive_count += 1
 
-
+    # Calcula el número de asignaturas con horas NO consecutivas en un mismo día
     return non_consecutive_count
 
 def fitness_timetabling(solution, *args, **kwargs):
