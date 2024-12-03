@@ -1,7 +1,5 @@
 import numpy as np
 
-np.random.seed(1234567890)
-
 # Ejemplo de dataset de entrada para el problema de asignación de horarios
 dataset = {"n_courses" : 3,
            "n_days" : 3,
@@ -96,6 +94,14 @@ def create_timetable(solution, dataset): #Crea una matriz con el num de asignatu
 
     return timetable
 
+def hoursPerSubject(data):
+    hours =[]
+    courses = data['courses']
+
+
+
+    return hours
+
 def calculate_c1(solution, *args, **kwargs):
     dataset = kwargs['dataset']
     conflicts = 0
@@ -104,7 +110,7 @@ def calculate_c1(solution, *args, **kwargs):
     for row in timetable:
         for value in row:
             if len(value) > 1:
-                conflicts += 1
+                conflicts += len(value) - 1
 
     return conflicts
 
@@ -131,7 +137,7 @@ def calculate_c2(solution, *args, **kwargs):
     # de una misma asignatura en un mismo día
     return hours
 
-def calculate_p1(solution, *args, **kwargs):
+def calculate_p1(solution, *args, **kwargs): #DA FALLOS
     dataset = kwargs['dataset']
     timetable = create_timetable(solution, dataset)
     empty_slots = 0
@@ -147,7 +153,7 @@ def calculate_p1(solution, *args, **kwargs):
     # Calcula el número de huecos vacíos entre asignaturas
     return empty_slots
 
-def calculate_p2(solution, *args, **kwargs):
+def calculate_p2(solution, *args, **kwargs): #DA FALLOS
     dataset = kwargs['dataset']
     timetable = create_timetable(solution, dataset)
     days_used = 0
@@ -163,6 +169,7 @@ def calculate_p2(solution, *args, **kwargs):
 
 def calculate_p3(solution, *args, **kwargs):
     dataset = kwargs['dataset']
+    timetable = create_timetable(solution, dataset)
     # Calcula el número de asignaturas con horas NO consecutivas en un mismo día
     return None
 
@@ -170,6 +177,18 @@ def fitness_timetabling(solution, *args, **kwargs):
     dataset = kwargs['dataset']
     # Calcula el fitness de una solución de timetabling siguiendo la fórmula del enunciado
     return None
+
+conflicts = calculate_c1(candidate, dataset=dataset)
+hours = calculate_c2(candidate, dataset=dataset)
+gaps = calculate_p1(candidate, dataset=dataset)
+days_used = calculate_p2(candidate, dataset=dataset)
+non_consecutive_subjects = calculate_p3(candidate, dataset=dataset)
+
+print("Conflicts", conflicts)
+print("More than 2 consecutive hours", hours)
+print("Gaps between subjects", gaps)
+print("Days used", days_used)
+print("Non consecutive subjects", non_consecutive_subjects)
 
 # Pistas:
 # - Una función que devuelva la tabla de horarios de una solución
