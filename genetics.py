@@ -165,9 +165,9 @@ def calculate_p2(solution, *args, **kwargs): #DA FALLOS
     for j in range(timetable.shape[1]):
         for i in range(timetable.shape[0]):
             if len(timetable[i][j]) >=1:
+                days_used += 1
                 break
 
-            days_used += 1
     # Calcula el número de días utilizados en los horarios
     return days_used
 
