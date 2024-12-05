@@ -282,10 +282,20 @@ for i, parent in enumerate(parents):
 # Pista:
 # - Crear una función auxiliar que genere un padre a partir de una selección por torneo
 # - Recuerda usar la misma librería de números aleatorios que en el resto del código
-'''
+
 def one_point_crossover(parent1, parent2, p_cross, *args, **kwargs):
     # Realiza el cruce de dos padres con una probabilidad p_cross
-    return None, None
+    if random.random() >= p_cross:
+        return parent1, parent2
+
+    cross_point = random.randint(1, len(parent1) - 1)
+
+    for i in range(cross_point, len(parent1)):
+        aux = parent1[i]
+        parent1[i] = parent2[i]
+        parent2[i] = aux
+
+    return parent1, parent2
 
 def uniform_mutation(chromosome, p_mut, *args, **kwargs):
     dataset = kwargs['dataset'] # Dataset con la misma estructura que el ejemplo
@@ -338,7 +348,7 @@ def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_
 ### Coloca aquí tus funciones de parada propuestas ###
 
 
-
+'''
 ################################# NO TOCAR #################################
 #                                                                          #
 import time
