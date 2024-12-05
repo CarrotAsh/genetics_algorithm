@@ -200,20 +200,36 @@ def calculate_p3(solution, *args, **kwargs):
 
 def fitness_timetabling(solution, *args, **kwargs):
     dataset = kwargs['dataset']
-    # Calcula el fitness de una solución de timetabling siguiendo la fórmula del enunciado
-    return None
+
+    c1 = calculate_c1(solution, **kwargs)
+    c2 = calculate_c2(solution, **kwargs)
+
+    if c1 > 0 or c2 > 0:
+        return 0
+
+    p1 = calculate_p1(solution, **kwargs)
+    p2 = calculate_p2(solution, **kwargs)
+    p3 = calculate_p3(solution, **kwargs)
+
+    fitness_value = 1 / (1 + p1 + p2 + p3)  # Calculamos la función fitness según la primera aproximación
+
+    return fitness_value
 
 conflicts = calculate_c1(candidate, dataset=dataset)
 hours = calculate_c2(candidate, dataset=dataset)
 gaps = calculate_p1(candidate, dataset=dataset)
 days_used = calculate_p2(candidate, dataset=dataset)
 non_consecutive_subjects = calculate_p3(candidate, dataset=dataset)
+fitness_value = fitness_timetabling(candidate, dataset=dataset) # Devuelve la fitness del candidato de ejemplo
 
+print()
 print("Conflicts", conflicts)
 print("More than 2 consecutive hours", hours)
 print("Gaps between subjects", gaps)
 print("Days used", days_used)
 print("Non consecutive subjects", non_consecutive_subjects)
+print("Fitness value: ", fitness_value)
+print()
 
 # Pistas:
 # - Una función que devuelva la tabla de horarios de una solución
@@ -235,7 +251,6 @@ def parent_by_tournament(population, fitness, *args, **kwargs):
     return parent
 
 def tournament_selection(population, fitness, number_parents, *args, **kwargs):
-    tournament_size = kwargs['tournament_size'] # Tamaño del torneo
     # Selecciona number_parents individuos de la población mediante selección por torneo
     parents = []
     selected_parents = set()#los parents que ya han aparecido para que no se repitan
@@ -250,10 +265,24 @@ def tournament_selection(population, fitness, number_parents, *args, **kwargs):
 
     return parents #devolvemos la lista que sera la nueva generacion
 
+#Comprobamos que funciona, pop size del ejemplo es 4 BORRAR LUEGO
+initial_population = generate_initial_population_timetabling(4,dataset=dataset)
+for i, candidate in enumerate(initial_population):
+    print(f"Timetable: {i + 1}:")
+    print_timetabling_solution(candidate, dataset=dataset)
+    print()
+
+parents = tournament_selection(initial_population, fitness_timetabling, 2, tournament_size=2, dataset=dataset)
+print("Parents:")
+for i, parent in enumerate(parents):
+    print(f"Parent {i + 1}:")
+    print_timetabling_solution(parent, dataset = dataset)
+    print()
+
 # Pista:
 # - Crear una función auxiliar que genere un padre a partir de una selección por torneo
 # - Recuerda usar la misma librería de números aleatorios que en el resto del código
-
+'''
 def one_point_crossover(parent1, parent2, p_cross, *args, **kwargs):
     # Realiza el cruce de dos padres con una probabilidad p_cross
     return None, None
@@ -308,7 +337,7 @@ def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_
 
 ### Coloca aquí tus funciones de parada propuestas ###
 
-'''
+
 
 ################################# NO TOCAR #################################
 #                                                                          #
