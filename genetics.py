@@ -301,7 +301,19 @@ def uniform_mutation(chromosome, p_mut, *args, **kwargs):
     dataset = kwargs['dataset'] # Dataset con la misma estructura que el ejemplo
     # Realiza la mutación gen a gen con una probabilidad p_mut
     # Obtener el alfabeto del dataset para aplicar la mutación
-    return None
+
+    n_days = dataset['n_days']
+    n_hours_day = dataset['n_hours_day']
+
+    alphabet = list(range(n_days * n_hours_day))
+
+    for i in range(len(chromosome)):
+        if random.random() >= p_mut:
+            continue
+
+        chromosome[i] = alphabet[random.randint(0, len(alphabet) - 1)]
+
+    return chromosome
 
 def generational_replacement(population, fitness, offspring, fitness_offspring, *args, **kwargs):
     # Realiza la sustitución generacional de la población
