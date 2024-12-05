@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 # Ejemplo de dataset de entrada para el problema de asignación de horarios
 dataset = {"n_courses" : 3,
@@ -219,12 +220,35 @@ print("Non consecutive subjects", non_consecutive_subjects)
 # - Una función que devuelva la cantidad de horas por día de cada asignatura
 # - A través de args y kwargs se pueden pasar argumentos adicionales que vayamos a necesitar
 
-fitness_timetabling(candidate, dataset=dataset) # Devuelve la fitness del candidato de ejemplo
-'''
+def parent_by_tournament(population, fitness, *args, **kwargs):
+    tournament_size = kwargs['tournament_size']  # Tamaño del torneo
+
+    # Seleccionamos aleatoriamente 'tournament_size' individuos de la población
+    competitors = random.sample(population, tournament_size)
+
+    # Evaluamos el fitness de cada competidor en el torneo
+    fitness_values = [fitness(individual, *args, **kwargs) for individual in competitors]
+
+    # Seleccionamos al individuo con el mejor fitness (máximo fitness en este caso)
+    parent = competitors[fitness_values.index(max(fitness_values))]
+
+    return parent
+
 def tournament_selection(population, fitness, number_parents, *args, **kwargs):
-    t = kwargs['tournament_size'] # Tamaño del torneo
+    tournament_size = kwargs['tournament_size'] # Tamaño del torneo
     # Selecciona number_parents individuos de la población mediante selección por torneo
-    return None
+    parents = []
+    selected_parents = set()#los parents que ya han aparecido para que no se repitan
+    while len(parents) < number_parents: #hacemos el bucle hasta alcanzar el numero de padres
+
+        parent = parent_by_tournament(population, fitness, *args, **kwargs)
+        parent_tuple = tuple(parent) #lo convertimos en tupla
+
+        if parent_tuple not in selected_parents:
+          parents.append(parent) #agregamos el padre que gana la seleccion por torneo
+          selected_parents.add(parent_tuple)
+
+    return parents #devolvemos la lista que sera la nueva generacion
 
 # Pista:
 # - Crear una función auxiliar que genere un padre a partir de una selección por torneo
@@ -283,6 +307,8 @@ def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_
 ### Coloca aquí tus funciones de reemplazo propuestas ###
 
 ### Coloca aquí tus funciones de parada propuestas ###
+
+'''
 
 ################################# NO TOCAR #################################
 #                                                                          #
