@@ -361,6 +361,28 @@ def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_
     return population, fitness, generation, best_fitness, mean_fitness
 
 ### Coloca aquí tus funciones propuestas para la generación de población inicial ###
+def generate_initial_population_final(pop_size, *args, **kwargs):
+    population = []
+
+    individual_length = sum(hours for _, hours in courses)
+
+    n_days = dataset['n_days']
+    n_hours_day = dataset['n_hours_day']
+
+    alphabet = list(range(n_days * n_hours_day))
+    individual_length = sum(hours for _, hours in courses)
+
+    for i in range(pop_size):
+        alphabet_copy = alphabet.copy()
+        individual = np.zeros(individual_length, dtype=int)
+
+        for j in range(individual_length):
+            individual[j] = alphabet_copy.pop(random.randint(0, individual_length - 1))
+
+        population.append(individual)
+
+    return population
+
 
 ### Coloca aquí tus funciones de fitness propuestas ###
 
