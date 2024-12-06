@@ -360,6 +360,13 @@ def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_
 
     return population, fitness, generation, best_fitness, mean_fitness
 
+'''
+En nuestra función para la generación de la población en la aproximación final hemos agregado una restricción, 
+para evitar conflictos de horario entre asignaturas. Cuando tomamos un valor aleatorio del alfabeto este es eliminado
+de los valores posibles del mismo (para ese individuo) al contrario que en la función de la aproximación inicial,
+en la cual se permite repetir valores. 
+'''
+
 ### Coloca aquí tus funciones propuestas para la generación de población inicial ###
 def generate_initial_population_final(pop_size, *args, **kwargs):
     population = []
@@ -383,8 +390,27 @@ def generate_initial_population_final(pop_size, *args, **kwargs):
 
     return population
 
-
+'''
+En vez de dar un cero como fitness del individuo, se le da unos pesos a las restricciones para que se pueda 
+diferenciar entre un individuo decente que no cumple las restricciones y uno malo que tampoco las pase, 
+de esta forma no se descartan individuos que no las cumplen por encima de otros con preferencias buenas.
+'''
 ### Coloca aquí tus funciones de fitness propuestas ###
+def fitness_timetabling_final(solution, *args, **kwargs):
+    dataset = kwargs['dataset']
+
+    p1 = calculate_p1(solution, **kwargs)
+    p2 = calculate_p2(solution, **kwargs)
+    p3 = calculate_p3(solution, **kwargs)
+
+    fitness_value = 1 / (1 + p1 + p2 + p3)
+
+    c1_weighted = calculate_c1(solution, **kwargs) * 4
+    c2_weighted = calculate_c2(solution, **kwargs) * 2
+
+    fitness_value /=  1 + c1_weighted + c2_weighted
+
+    return fitness_value
 
 ### Coloca aquí tus funciones de selección propuestas ###
 
