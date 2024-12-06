@@ -285,17 +285,21 @@ for i, parent in enumerate(parents):
 
 def one_point_crossover(parent1, parent2, p_cross, *args, **kwargs):
     # Realiza el cruce de dos padres con una probabilidad p_cross
+
+    child1 = parent1.copy()
+    child2 = parent2.copy()
+
     if random.random() >= p_cross:
-        return parent1, parent2
+        return child1, child2
 
-    cross_point = random.randint(1, len(parent1) - 1)
+    cross_point = random.randint(1, len(child1) - 1)
 
-    for i in range(cross_point, len(parent1)):
-        aux = parent1[i]
-        parent1[i] = parent2[i]
-        parent2[i] = aux
+    for i in range(cross_point, len(child1)):
+        aux = child1[i]
+        child1[i] = child2[i]
+        child2[i] = aux
 
-    return parent1, parent2
+    return child1, child2
 
 def uniform_mutation(chromosome, p_mut, *args, **kwargs):
     dataset = kwargs['dataset'] # Dataset con la misma estructura que el ejemplo
@@ -318,7 +322,18 @@ def uniform_mutation(chromosome, p_mut, *args, **kwargs):
 def generational_replacement(population, fitness, offspring, fitness_offspring, *args, **kwargs):
     # Realiza la sustitución generacional de la población
     # Debe devolver tanto la nueva población como el fitness de la misma
-    return None, None
+
+    pop_fit = list(zip(population, fitness))
+    pop_fit.sort(key=lambda x: x[1])
+
+    off_fit = list(zip(population, fitness_offspring))
+
+    for i in range(len(offspring)):
+        pop_fit[i] = off_fit[i]
+
+    new_population, new_fitness = zip(*pop_fit)
+
+    return new_population, new_fitness
 
 def generation_stop(generation, fitness, *args, **kwargs):
     max_gen=kwargs['max_gen']
