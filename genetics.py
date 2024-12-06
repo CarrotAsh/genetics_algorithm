@@ -350,13 +350,41 @@ def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_
     generation = 0 # Contador de generaciones
 
     # 1 - Inicializa la población con la función generate_population
+    population = generate_population(pop_size, *args, **kwargs)
+
     # 2 - Evalúa la población con la función fitness_function
+    fitness_values = [fitness_function(x, *args, **kwargs) for x in population]
+    best_fitness.append(np.max(fitness_values))
+    mean_fitness.append(np.mean(fitness_values))
+
     # 3 - Mientras no se cumpla el criterio de parada stopping_criteria
-    # 4 - Selección de padres con la función selection
-    # 5 - Cruce de padres mediante la función crossover con probabilidad p_cross
-    # 6 - Mutación de los descendientes con la función mutation con probabilidad p_mut
-    # 7 - Evaluación de los descendientes
-    # 8 - Generación de la nueva población con la función environmental_selection
+    while not stopping_criteria(generation, fitness, *args, **kwargs):
+        # 4 - Selección de padres con la función selection
+        parents = selection(population, fitness_function, offspring_size if (offspring_size%2==0) else offspring_size+1, *args, **kwargs)
+
+        # 5 - Cruce de padres mediante la función crossover con probabilidad p_cross
+        offspring = []
+        for k in range(math.ceil(offspring_size / 2)):
+            parent1 = parents[2 * k]
+            parent2 = parents[2 * k + 1]
+            child1, child2 = crossover(parent1, parent2, p_cross, *args, **kwargs)
+
+        # 6 - Mutación de los descendientes con la función mutation con probabilidad p_mut
+            child1 = mutation(child1, p_mut, *args, **kwargs)
+            offspring.append(child1)
+            if 2 * k + 1 < offspring_size:
+                child2 = mutation(child2, p_mut, *args, **kwargs)
+                offspring.append(child2)
+
+        # 7 - Evaluación de los descendientes
+            fitness_offspring = [fitness_function(x, *args, **kwargs) for x in offspring]
+            best_fitness.append(np.max(fitness_offspring))
+            mean_fitness.append(np.mean(fitness_offspring))
+
+        # 8 - Generación de la nueva población con la función environmental_selection
+            population, fitness_values = environmental_selection(population, fitness_values, offspring, fitness_offspring, *args, **kwargs)
+
+        generation += 1
 
     return population, fitness, generation, best_fitness, mean_fitness
 
