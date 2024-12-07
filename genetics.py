@@ -338,7 +338,7 @@ def generational_replacement(population, fitness, offspring, fitness_offspring, 
 def generation_stop(generation, fitness, *args, **kwargs):
     max_gen=kwargs['max_gen']
     # Comprueba si se cumple el criterio de parada (máximo número de generaciones)
-    return generation > max_gen
+    return generation >= max_gen
 
 def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_criteria, offspring_size,
                       selection, crossover, p_cross, mutation, p_mut, environmental_selection, *args, **kwargs):
