@@ -493,6 +493,24 @@ def change_values_cross_final(parent1, parent2, p_cross, *args, **kwargs):
 
 ### Coloca aquí tus funciones de parada propuestas ###
 
+'''
+Para mejorar la condicion de parada añadimos la condicion de que pare cuando la mejor fitness 
+no haya mejorado en 4 generaciones. De tal forma evitamos seguir iterando sin conseguir mejores individuos
+'''
+
+def generation_stop_final(generation, fitness, *args, **kwargs):
+    max_gen=kwargs['max_gen']
+    max_fit_gen = max(fitness)
+    max_fit = 0
+    counter = -1
+
+    while True:
+        if max_fit_gen > max_fit:
+            counter += 1
+            if counter >= 3:
+                return False
+        yield generation >= max_gen
+        max_fit_gen = max(fitness)
 
 '''
 ################################# NO TOCAR #################################
