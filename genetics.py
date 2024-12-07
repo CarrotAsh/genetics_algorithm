@@ -344,7 +344,7 @@ def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_
                       selection, crossover, p_cross, mutation, p_mut, environmental_selection, *args, **kwargs):
     # Aplica un algoritmo genético a un problema de maximización
     population = None # Crea la población de individuos de tamaño pop_size
-    fitness = None # Contiene la evaluación de la población
+    fitness_values = None # Contiene la evaluación de la población
     best_fitness = [] # Guarda el mejor fitness de cada generación
     mean_fitness = [] # Guarda el fitness medio de cada generación
     generation = 0 # Contador de generaciones
@@ -358,7 +358,7 @@ def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_
     mean_fitness.append(np.mean(fitness_values))
 
     # 3 - Mientras no se cumpla el criterio de parada stopping_criteria
-    while not stopping_criteria(generation, fitness, *args, **kwargs):
+    while not stopping_criteria(generation, fitness_values, *args, **kwargs):
         # 4 - Selección de padres con la función selection
         parents = selection(population, fitness_function, offspring_size if (offspring_size%2==0) else offspring_size+1, *args, **kwargs)
 
@@ -386,7 +386,7 @@ def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_
 
         generation += 1
 
-    return population, fitness, generation, best_fitness, mean_fitness
+    return population, fitness_values, generation, best_fitness, mean_fitness
 
 '''
 En nuestra función para la generación de la población en la aproximación final hemos agregado una restricción, 
