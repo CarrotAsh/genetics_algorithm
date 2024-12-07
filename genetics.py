@@ -236,7 +236,7 @@ print()
 # - Una función que devuelva la cantidad de horas por día de cada asignatura
 # - A través de args y kwargs se pueden pasar argumentos adicionales que vayamos a necesitar
 
-def parent_by_tournament(population, fitness, *args, **kwargs):
+def parent_by_tournament(population, fitness, *args, **kwargs): #Función auxiliar que genera un padre a partir de una selección por torneo
     tournament_size = kwargs['tournament_size']  # Tamaño del torneo
 
     # Seleccionamos aleatoriamente 'tournament_size' individuos de la población
@@ -253,17 +253,21 @@ def parent_by_tournament(population, fitness, *args, **kwargs):
 def tournament_selection(population, fitness, number_parents, *args, **kwargs):
     # Selecciona number_parents individuos de la población mediante selección por torneo
     parents = []
-    selected_parents = set()#los parents que ya han aparecido para que no se repitan
+    #selected_parents = set()#los parents que ya han aparecido para que no se repitan
     while len(parents) < number_parents: #hacemos el bucle hasta alcanzar el numero de padres
 
         parent = parent_by_tournament(population, fitness, *args, **kwargs)
-        parent_tuple = tuple(parent) #lo convertimos en tupla
+        #parent_tuple = tuple(parent) #lo convertimos en tupla
 
-        if parent_tuple not in selected_parents:
-          parents.append(parent) #agregamos el padre que gana la seleccion por torneo
-          selected_parents.add(parent_tuple)
+        #if parent_tuple not in selected_parents:
+        parents.append(parent) #agregamos el padre que gana la seleccion por torneo
+          #selected_parents.add(parent_tuple)
 
     return parents #devolvemos la lista que sera la nueva generacion
+
+# Pista:
+# - Crear una función auxiliar que genere un padre a partir de una selección por torneo
+# - Recuerda usar la misma librería de números aleatorios que en el resto del código
 
 #Comprobamos que funciona, pop size del ejemplo es 4 BORRAR LUEGO
 initial_population = generate_initial_population_timetabling(4,dataset=dataset)
