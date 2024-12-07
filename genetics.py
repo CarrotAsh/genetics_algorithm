@@ -444,6 +444,45 @@ def fitness_timetabling_final(solution, *args, **kwargs):
 
 ### Coloca aquí tus funciones de cruce propuestas ###
 
+'''
+Para cruzar a dos individuos elegimos un indice aleatorio y cambiamos los valores que esten en ese indice entre
+un array y otro.
+Esto sirve para cambiar una clase de la franja horaria en la que esta en este individuo
+a la franja horaria en la que este en el otro individuo. 
+Si hay conflicto porque ya habia una clase en esa franja horaria la cambiamos a la otra.
+
+EJ:
+    parent1 = [1,4,3] -> [2,4,3]
+               ^
+               |
+               v
+    parent2 = [2,3,1] -> [1,3,2]
+    
+    Cambiamos el 1 y el 2, y si el valor entrante ya se encuentra en el array lo sustituimos por el valor saliente
+'''
+def change_values_cross_final(parent1, parent2, p_cross, *args, **kwargs):
+    child1 = parent1.copy()
+    child2 = parent2.copy()
+
+    if random.random() >= p_cross:
+        return child1, child2
+
+    cross_index = child1[random.randint(0, len(child1))]
+    value1 = child1[cross_index]
+    value2 = child2[cross_index]
+
+    # Si la clase esta en la misma franja horaria el cruce no tiene efecto (otra forma de hacerlo seria probando clases
+    # hasta que haya una diferencia)
+    if value1 == value2:
+        return child1, child2
+
+    child1[cross_index], child2[cross_index] = child2[cross_index], child1[cross_index]
+
+    child1[child1 == value2] = value1
+    child2[child2 == value1] = value2
+
+    return child1, child2
+
 ### Coloca aquí tus funciones de mutación propuestas ###
 
 ### Coloca aquí tus funciones de reemplazo propuestas ###
