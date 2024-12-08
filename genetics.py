@@ -516,6 +516,29 @@ def only_new_values_mutation_final(chromosome, p_mut, *args, **kwargs):
 
 ### Coloca aquí tus funciones de reemplazo propuestas ###
 
+'''
+El reemplazamiento con elitismo deberia asegurar que la mejor fitness no baje, permitiendo mejores resultados.
+'''
+def generational_replacement_final(population, fitness, offspring, fitness_offspring, *args, **kwargs):
+
+    pop_fit = list(zip(population, fitness))
+    pop_fit.sort(key=lambda x: x[1])
+
+    best_individual = pop_fit[-1][0]
+
+    off_fit = list(zip(population, fitness_offspring))
+
+    for i in range(len(offspring)):
+        pop_fit[i] = off_fit[i]
+
+    new_population, new_fitness = zip(*pop_fit)
+
+    if len(new_population) + 1 < 100:
+        new_population.append(best_individual)
+
+    return new_population, new_fitness
+
+
 ### Coloca aquí tus funciones de parada propuestas ###
 
 '''
