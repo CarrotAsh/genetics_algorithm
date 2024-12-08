@@ -3,10 +3,11 @@ import numpy as np
 import random
 
 # Ejemplo de dataset de entrada para el problema de asignación de horarios
-dataset = {"n_courses" : 3,
-           "n_days" : 3,
-           "n_hours_day" : 3,
-           "courses" : [("IA", 1), ("ALG", 2), ("BD", 3)]}
+dataset = {"n_courses": 3,
+           "n_days": 3,
+           "n_hours_day": 3,
+           "courses": [("IA", 1), ("ALG", 2), ("BD", 3)]}
+
 
 def generate_random_array_int(alphabet, length):
     indices = np.random.randint(0, len(alphabet), length)
@@ -14,8 +15,9 @@ def generate_random_array_int(alphabet, length):
     # Genera un array de enteros aleatorios de tamaño length
     # usando el alfabeto dado
 
+
 def generate_initial_population_timetabling(pop_size, *args, **kwargs):
-    dataset = kwargs['dataset'] # Dataset con la misma estructura que el ejemplo
+    dataset = kwargs['dataset']  # Dataset con la misma estructura que el ejemplo
 
     n_days = dataset['n_days']
     n_hours_day = dataset['n_hours_day']
@@ -30,6 +32,7 @@ def generate_initial_population_timetabling(pop_size, *args, **kwargs):
     # Genera una población inicial de tamaño pop_size
     return population
 
+
 ################################# NO TOCAR #################################
 #                                                                          #
 def print_timetabling_solution(solution, dataset):
@@ -43,7 +46,7 @@ def print_timetabling_solution(solution, dataset):
 
     # Llena la matriz con las asignaturas
     i = 0
-    max_len = 6 # Longitud del título Día XX
+    max_len = 6  # Longitud del título Día XX
     for course in courses:
         for _ in range(course[1]):
             day = solution[i] // n_hours_day
@@ -57,18 +60,20 @@ def print_timetabling_solution(solution, dataset):
     # Imprime la matriz con formato de tabla markdown
     print('|         |', end='')
     for i in range(n_days):
-        print(f' Día {i+1:<2}{" "*(max_len-6)} |', end='')
+        print(f' Día {i + 1:<2}{" " * (max_len - 6)} |', end='')
     print()
     print('|---------|', end='')
     for i in range(n_days):
-        print(f'-{"-"*max_len}-|', end='')
+        print(f'-{"-" * max_len}-|', end='')
     print()
     for j in range(n_hours_day):
-        print(f'| Hora {j+1:<2} |', end='')
+        print(f'| Hora {j + 1:<2} |', end='')
         for i in range(n_days):
             s = '/'.join(timetable[i][j])
-            print(f' {s}{" "*(max_len-len(s))}', end=' |')
+            print(f' {s}{" " * (max_len - len(s))}', end=' |')
         print()
+
+
 #                                                                          #
 ################################# NO TOCAR #################################
 
@@ -76,11 +81,12 @@ def print_timetabling_solution(solution, dataset):
 candidate = generate_random_array_int(list(range(9)), 6)
 print_timetabling_solution(candidate, dataset)
 
-def create_timetable(solution, dataset): #Crea una matriz con el num de asignaturas en cada franja horaria
+
+def create_timetable(solution, dataset):  # Crea una matriz con el num de asignaturas en cada franja horaria
     n_hours_day = dataset['n_hours_day']
     n_days = dataset['n_days']
 
-    timetable = np.empty((n_hours_day, n_days) , dtype=object)
+    timetable = np.empty((n_hours_day, n_days), dtype=object)
     for i in range(n_days):
         for j in range(n_hours_day):
             timetable[i][j] = []
@@ -96,13 +102,6 @@ def create_timetable(solution, dataset): #Crea una matriz con el num de asignatu
 
     return timetable
 
-def hoursPerSubject(data):
-    hours =[]
-    courses = data['courses']
-
-
-
-    return hours
 
 def calculate_c1(solution, *args, **kwargs):
     dataset = kwargs['dataset']
@@ -115,6 +114,7 @@ def calculate_c1(solution, *args, **kwargs):
                 conflicts += len(value) - 1
 
     return conflicts
+
 
 def calculate_c2(solution, *args, **kwargs):
     dataset = kwargs['dataset']
@@ -139,6 +139,7 @@ def calculate_c2(solution, *args, **kwargs):
     # de una misma asignatura en un mismo día
     return hours
 
+
 def calculate_p1(solution, *args, **kwargs):
     dataset = kwargs['dataset']
     timetable = create_timetable(solution, dataset)
@@ -159,19 +160,21 @@ def calculate_p1(solution, *args, **kwargs):
 
     return gaps
 
-def calculate_p2(solution, *args, **kwargs): #DA FALLOS
+
+def calculate_p2(solution, *args, **kwargs):  # DA FALLOS
     dataset = kwargs['dataset']
     timetable = create_timetable(solution, dataset)
     days_used = 0
 
     for j in range(timetable.shape[1]):
         for i in range(timetable.shape[0]):
-            if len(timetable[i][j]) >=1:
+            if len(timetable[i][j]) >= 1:
                 days_used += 1
                 break
 
     # Calcula el número de días utilizados en los horarios
     return days_used
+
 
 def calculate_p3(solution, *args, **kwargs):
     dataset = kwargs['dataset']
@@ -199,6 +202,7 @@ def calculate_p3(solution, *args, **kwargs):
     # Calcula el número de asignaturas con horas NO consecutivas en un mismo día
     return non_consecutive_count
 
+
 def fitness_timetabling(solution, *args, **kwargs):
     dataset = kwargs['dataset']
 
@@ -216,28 +220,31 @@ def fitness_timetabling(solution, *args, **kwargs):
 
     return fitness_value
 
+
 conflicts = calculate_c1(candidate, dataset=dataset)
 hours = calculate_c2(candidate, dataset=dataset)
 gaps = calculate_p1(candidate, dataset=dataset)
 days_used = calculate_p2(candidate, dataset=dataset)
 non_consecutive_subjects = calculate_p3(candidate, dataset=dataset)
-fitness_value = fitness_timetabling(candidate, dataset=dataset) # Devuelve la fitness del candidato de ejemplo
+fitness_value = fitness_timetabling(candidate, dataset=dataset)  # Devuelve la fitness del candidato de ejemplo
 
-print()
+'''print()
 print("Conflicts", conflicts)
 print("More than 2 consecutive hours", hours)
 print("Gaps between subjects", gaps)
 print("Days used", days_used)
 print("Non consecutive subjects", non_consecutive_subjects)
 print("Fitness value: ", fitness_value)
-print()
+print()'''
+
 
 # Pistas:
 # - Una función que devuelva la tabla de horarios de una solución
 # - Una función que devuelva la cantidad de horas por día de cada asignatura
 # - A través de args y kwargs se pueden pasar argumentos adicionales que vayamos a necesitar
 
-def parent_by_tournament(population, fitness, *args, **kwargs): #Función auxiliar que genera un padre a partir de una selección por torneo
+def parent_by_tournament(population, fitness, *args,
+                         **kwargs):  # Función auxiliar que genera un padre a partir de una selección por torneo
     tournament_size = kwargs['tournament_size']  # Tamaño del torneo
 
     # Seleccionamos aleatoriamente 'tournament_size' individuos de la población
@@ -251,25 +258,28 @@ def parent_by_tournament(population, fitness, *args, **kwargs): #Función auxili
 
     return parent
 
+
 def tournament_selection(population, fitness, number_parents, *args, **kwargs):
     # Selecciona number_parents individuos de la población mediante selección por torneo
     parents = []
-    #selected_parents = set()#los parents que ya han aparecido para que no se repitan
-    while len(parents) < number_parents: #hacemos el bucle hasta alcanzar el numero de padres
+    # selected_parents = set()#los parents que ya han aparecido para que no se repitan
+    while len(parents) < number_parents:  # hacemos el bucle hasta alcanzar el numero de padres
 
         parent = parent_by_tournament(population, fitness, *args, **kwargs)
-        #parent_tuple = tuple(parent) #lo convertimos en tupla
+        # parent_tuple = tuple(parent) #lo convertimos en tupla
 
-        #if parent_tuple not in selected_parents:
-        parents.append(parent) #agregamos el padre que gana la seleccion por torneo
-          #selected_parents.add(parent_tuple)
+        # if parent_tuple not in selected_parents:
+        parents.append(parent)  # agregamos el padre que gana la seleccion por torneo
+        # selected_parents.add(parent_tuple)
 
-    return parents #devolvemos la lista que sera la nueva generacion
+    return parents  # devolvemos la lista que sera la nueva generacion
+
 
 # Pista:
 # - Crear una función auxiliar que genere un padre a partir de una selección por torneo
 # - Recuerda usar la misma librería de números aleatorios que en el resto del código
 
+'''
 #Comprobamos que funciona, pop size del ejemplo es 4 BORRAR LUEGO
 initial_population = generate_initial_population_timetabling(4,dataset=dataset)
 for i, candidate in enumerate(initial_population):
@@ -283,10 +293,8 @@ for i, parent in enumerate(parents):
     print(f"Parent {i + 1}:")
     print_timetabling_solution(parent, dataset = dataset)
     print()
+'''
 
-# Pista:
-# - Crear una función auxiliar que genere un padre a partir de una selección por torneo
-# - Recuerda usar la misma librería de números aleatorios que en el resto del código
 
 def one_point_crossover(parent1, parent2, p_cross, *args, **kwargs):
     # Realiza el cruce de dos padres con una probabilidad p_cross
@@ -306,8 +314,9 @@ def one_point_crossover(parent1, parent2, p_cross, *args, **kwargs):
 
     return child1, child2
 
+
 def uniform_mutation(chromosome, p_mut, *args, **kwargs):
-    dataset = kwargs['dataset'] # Dataset con la misma estructura que el ejemplo
+    dataset = kwargs['dataset']  # Dataset con la misma estructura que el ejemplo
     # Realiza la mutación gen a gen con una probabilidad p_mut
     # Obtener el alfabeto del dataset para aplicar la mutación
 
@@ -323,6 +332,7 @@ def uniform_mutation(chromosome, p_mut, *args, **kwargs):
         chromosome[i] = alphabet[random.randint(0, len(alphabet) - 1)]
 
     return chromosome
+
 
 def generational_replacement(population, fitness, offspring, fitness_offspring, *args, **kwargs):
     # Realiza la sustitución generacional de la población
@@ -340,19 +350,21 @@ def generational_replacement(population, fitness, offspring, fitness_offspring, 
 
     return new_population, new_fitness
 
+
 def generation_stop(generation, fitness, *args, **kwargs):
-    max_gen=kwargs['max_gen']
+    max_gen = kwargs['max_gen']
     # Comprueba si se cumple el criterio de parada (máximo número de generaciones)
     return generation >= max_gen
+
 
 def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_criteria, offspring_size,
                       selection, crossover, p_cross, mutation, p_mut, environmental_selection, *args, **kwargs):
     # Aplica un algoritmo genético a un problema de maximización
-    population = None # Crea la población de individuos de tamaño pop_size
-    fitness_values = None # Contiene la evaluación de la población
-    best_fitness = [] # Guarda el mejor fitness de cada generación
-    mean_fitness = [] # Guarda el fitness medio de cada generación
-    generation = 0 # Contador de generaciones
+    population = None  # Crea la población de individuos de tamaño pop_size
+    fitness_values = None  # Contiene la evaluación de la población
+    best_fitness = []  # Guarda el mejor fitness de cada generación
+    mean_fitness = []  # Guarda el fitness medio de cada generación
+    generation = 0  # Contador de generaciones
 
     # 1 - Inicializa la población con la función generate_population
     population = generate_population(pop_size, *args, **kwargs)
@@ -365,7 +377,8 @@ def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_
     # 3 - Mientras no se cumpla el criterio de parada stopping_criteria
     while not stopping_criteria(generation, fitness_values, *args, **kwargs):
         # 4 - Selección de padres con la función selection
-        parents = selection(population, fitness_function, offspring_size if (offspring_size%2==0) else offspring_size+1, *args, **kwargs)
+        parents = selection(population, fitness_function,
+                            offspring_size if (offspring_size % 2 == 0) else offspring_size + 1, *args, **kwargs)
 
         # 5 - Cruce de padres mediante la función crossover con probabilidad p_cross
         offspring = []
@@ -374,24 +387,26 @@ def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_
             parent2 = parents[2 * k + 1]
             child1, child2 = crossover(parent1, parent2, p_cross, *args, **kwargs)
 
-        # 6 - Mutación de los descendientes con la función mutation con probabilidad p_mut
+            # 6 - Mutación de los descendientes con la función mutation con probabilidad p_mut
             child1 = mutation(child1, p_mut, *args, **kwargs)
             offspring.append(child1)
             if 2 * k + 1 < offspring_size:
                 child2 = mutation(child2, p_mut, *args, **kwargs)
                 offspring.append(child2)
 
-        # 7 - Evaluación de los descendientes
+            # 7 - Evaluación de los descendientes
             fitness_offspring = [fitness_function(x, *args, **kwargs) for x in offspring]
             best_fitness.append(np.max(fitness_offspring))
             mean_fitness.append(np.mean(fitness_offspring))
 
-        # 8 - Generación de la nueva población con la función environmental_selection
-            population, fitness_values = environmental_selection(population, fitness_values, offspring, fitness_offspring, *args, **kwargs)
+            # 8 - Generación de la nueva población con la función environmental_selection
+            population, fitness_values = environmental_selection(population, fitness_values, offspring,
+                                                                 fitness_offspring, *args, **kwargs)
 
         generation += 1
 
     return population, fitness_values, generation, best_fitness, mean_fitness
+
 
 '''
 En nuestra función para la generación de la población en la aproximación final hemos agregado una restricción, 
@@ -399,6 +414,7 @@ para evitar conflictos de horario entre asignaturas. Cuando tomamos un valor ale
 de los valores posibles del mismo (para ese individuo) al contrario que en la función de la aproximación inicial,
 en la cual se permite repetir valores. 
 '''
+
 
 ### Coloca aquí tus funciones propuestas para la generación de población inicial ###
 def generate_initial_population_final(pop_size, *args, **kwargs):
@@ -425,11 +441,14 @@ def generate_initial_population_final(pop_size, *args, **kwargs):
 
     return population
 
+
 '''
 En vez de dar un cero como fitness del individuo, se le da unos pesos a las restricciones para que se pueda 
 diferenciar entre un individuo decente que no cumple las restricciones y uno malo que tampoco las pase, 
 de esta forma no se descartan individuos que no las cumplen por encima de otros con preferencias buenas.
 '''
+
+
 ### Coloca aquí tus funciones de fitness propuestas ###
 def fitness_timetabling_final(solution, *args, **kwargs):
     dataset = kwargs['dataset']
@@ -443,9 +462,10 @@ def fitness_timetabling_final(solution, *args, **kwargs):
     c1_weighted = calculate_c1(solution, **kwargs) * 4
     c2_weighted = calculate_c2(solution, **kwargs) * 2
 
-    fitness_value /=  1 + c1_weighted + c2_weighted
+    fitness_value /= 1 + c1_weighted + c2_weighted
 
     return fitness_value
+
 
 ### Coloca aquí tus funciones de selección propuestas ###
 
@@ -454,15 +474,17 @@ En este problema la seleccion por torneo genera bastantes repetidos cuando el nu
 de padres, con seleccion por rueda de la fortuna damos mas oportunidades a individuos peores diversificando asi
 nuestra poblacion.
 '''
-def roulette_selection_final(population, fitness, number_parents, *args, **kwargs):
 
+
+def roulette_selection_final(population, fitness, number_parents, *args, **kwargs):
     fitness_values = [fitness(individual, *args, **kwargs) for individual in population]
 
     pop_fit = sum(fitness_values)
-    chromosome_probabilities = [f/pop_fit for f in fitness_values]
+    chromosome_probabilities = [f / pop_fit for f in fitness_values]
     indices = np.random.choice(range(len(population)), number_parents, p=chromosome_probabilities)
 
     return [population[i] for i in indices]
+
 
 ### Coloca aquí tus funciones de cruce propuestas ###
 
@@ -482,6 +504,8 @@ EJ:
     
     Cambiamos el 1 y el 2, y si el valor entrante ya se encuentra en el array lo sustituimos por el valor saliente
 '''
+
+
 def change_values_cross_final(parent1, parent2, p_cross, *args, **kwargs):
     child1 = parent1.copy()
     child2 = parent2.copy()
@@ -505,11 +529,14 @@ def change_values_cross_final(parent1, parent2, p_cross, *args, **kwargs):
 
     return child1, child2
 
+
 ### Coloca aquí tus funciones de mutación propuestas ###
 
 '''
 Introduce solo valores nuevos al mutar para evitar conflictos.
 '''
+
+
 def only_new_values_mutation_final(chromosome, p_mut, *args, **kwargs):
     n_days = dataset['n_days']
     n_hours_days = dataset['n_hours_day']
@@ -529,13 +556,15 @@ def only_new_values_mutation_final(chromosome, p_mut, *args, **kwargs):
 
     return chromosome
 
+
 ### Coloca aquí tus funciones de reemplazo propuestas ###
 
 '''
 El reemplazamiento con elitismo deberia asegurar que la mejor fitness no baje, permitiendo mejores resultados.
 '''
-def generational_replacement_final(population, fitness, offspring, fitness_offspring, *args, **kwargs):
 
+
+def generational_replacement_final(population, fitness, offspring, fitness_offspring, *args, **kwargs):
     pop_fit = list(zip(population, fitness))
     pop_fit.sort(key=lambda x: x[1])
 
@@ -561,8 +590,9 @@ Para mejorar la condicion de parada añadimos la condicion de que pare cuando la
 no haya mejorado en 4 generaciones. De tal forma evitamos seguir iterando sin conseguir mejores individuos
 '''
 
+
 def generation_stop_final(generation, fitness, *args, **kwargs):
-    max_gen=kwargs['max_gen']
+    max_gen = kwargs['max_gen']
     max_fit_gen = max(fitness)
     max_fit = 0
     counter = -1
@@ -575,10 +605,11 @@ def generation_stop_final(generation, fitness, *args, **kwargs):
         yield generation >= max_gen
         max_fit_gen = max(fitness)
 
-'''
+
 ################################# NO TOCAR #################################
 #                                                                          #
 import time
+
 
 def timer(func):
     def wrapper(*args, **kwargs):
@@ -586,7 +617,10 @@ def timer(func):
         res = func(*args, **kwargs)
         end = time.time()
         return *res, end - start
+
     return wrapper
+
+
 #                                                                          #
 ################################# NO TOCAR #################################
 
@@ -600,42 +634,46 @@ def run_ga(generate_population, pop_size, fitness_function, stopping_criteria, o
     # Además del retorno de la función, se devuelve el tiempo de ejecución en segundos
     return genetic_algorithm(generate_population, pop_size, fitness_function, stopping_criteria, offspring_size,
                              selection, crossover, p_cross, mutation, p_mut, environmental_selection, *args, **kwargs)
+
+
 #                                                                          #
 ################################# NO TOCAR #################################
 
 # Se deben probar los 6 datasets
-dataset1 = {"n_courses" : 3,
-            "n_days" : 3,
-            "n_hours_day" : 3,
-            "courses" : [("IA", 1), ("ALG", 2), ("BD", 3)]}
+dataset1 = {"n_courses": 3,
+            "n_days": 3,
+            "n_hours_day": 3,
+            "courses": [("IA", 1), ("ALG", 2), ("BD", 3)]}
 
-dataset2 = {"n_courses" : 4,
-            "n_days" : 3,
-            "n_hours_day" : 4,
-            "courses" : [("IA", 1), ("ALG", 2), ("BD", 3), ("POO", 2)]}
+dataset2 = {"n_courses": 4,
+            "n_days": 3,
+            "n_hours_day": 4,
+            "courses": [("IA", 1), ("ALG", 2), ("BD", 3), ("POO", 2)]}
 
-dataset3 = {"n_courses" : 4,
-            "n_days" : 4,
-            "n_hours_day" : 4,
-            "courses" : [("IA", 2), ("ALG", 4), ("BD", 6), ("POO", 4)]}
+dataset3 = {"n_courses": 4,
+            "n_days": 4,
+            "n_hours_day": 4,
+            "courses": [("IA", 2), ("ALG", 4), ("BD", 6), ("POO", 4)]}
 
-dataset4 = {"n_courses" : 5,
-            "n_days" : 4,
-            "n_hours_day" : 6,
-            "courses" : [("IA", 2), ("ALG", 4), ("BD", 6), ("POO", 4), ("AC", 4)]}
+dataset4 = {"n_courses": 5,
+            "n_days": 4,
+            "n_hours_day": 6,
+            "courses": [("IA", 2), ("ALG", 4), ("BD", 6), ("POO", 4), ("AC", 4)]}
 
-dataset5 = {"n_courses" : 7,
-            "n_days" : 4,
-            "n_hours_day" : 8,
-            "courses" : [("IA", 2), ("ALG", 4), ("BD", 6), ("POO", 4), ("AC", 4), ("FP", 4), ("TP", 2)]}
+dataset5 = {"n_courses": 7,
+            "n_days": 4,
+            "n_hours_day": 8,
+            "courses": [("IA", 2), ("ALG", 4), ("BD", 6), ("POO", 4), ("AC", 4), ("FP", 4), ("TP", 2)]}
 
-dataset6 = {"n_courses" : 11,
-            "n_days" : 5,
-            "n_hours_day" : 12,
-            "courses" : [("IA", 2), ("ALG", 4), ("BD", 6), ("POO", 4), ("AC", 4), ("FP", 4), ("TP", 2), ("FC", 4), ("TSO", 2), ("AM", 4), ("LMD", 4)]}
+dataset6 = {"n_courses": 11,
+            "n_days": 5,
+            "n_hours_day": 12,
+            "courses": [("IA", 2), ("ALG", 4), ("BD", 6), ("POO", 4), ("AC", 4), ("FP", 4), ("TP", 2), ("FC", 4),
+                        ("TSO", 2), ("AM", 4), ("LMD", 4)]}
 
 import numpy as np
 import random
+
 
 def set_seed(seed):
     # Se debe fijar la semilla usada para generar números aleatorios
@@ -644,13 +682,17 @@ def set_seed(seed):
     # Con la librería numpy
     np.random.seed(seed)
 
+
 ################################# NO TOCAR #################################
 #                                                                          #
 def best_solution(population, fitness):
     # Devuelve la mejor solución de la población
     return population[fitness.index(max(fitness))]
 
+
 import matplotlib.pyplot as plt
+
+
 def plot_fitness_evolution(best_fitness, mean_fitness):
     plt.plot(best_fitness, label='Best fitness')
     plt.plot(mean_fitness, label='Mean fitness')
@@ -658,13 +700,18 @@ def plot_fitness_evolution(best_fitness, mean_fitness):
     plt.ylabel('Fitness')
     plt.legend()
     plt.show()
+
+
 #                                                                          #
 ################################# NO TOCAR #################################
 
 from statistics import mean, median, stdev
 
-def launch_experiment(seeds, dataset, generate_population, pop_size, fitness_function, c1, c2, p1, p2, p3, stopping_criteria,
-                      offspring_size, selection, crossover, p_cross, mutation, p_mut, environmental_selection, *args, **kwargs):
+
+def launch_experiment(seeds, dataset, generate_population, pop_size, fitness_function, c1, c2, p1, p2, p3,
+                      stopping_criteria,
+                      offspring_size, selection, crossover, p_cross, mutation, p_mut, environmental_selection, *args,
+                      **kwargs):
     best_individuals = []
     best_inds_c1 = []
     best_inds_c2 = []
@@ -677,12 +724,18 @@ def launch_experiment(seeds, dataset, generate_population, pop_size, fitness_fun
     last_generations = []
     execution_times = []
     # Ejecutamos el algoritmo con cada semilla
-    for seed in seeds:
+    for seed in [seeds[0]]:
         print(f"Running Genetic Algorithm with seed {seed}")
         set_seed(seed)
-        population, fitness, generation, best_fitness, mean_fitness, execution_time = run_ga(generate_population, pop_size, fitness_function,stopping_criteria,
-                                                                                             offspring_size, selection, crossover, p_cross, mutation, p_mut,
-                                                                                             environmental_selection, dataset=dataset, *args, **kwargs)
+        population, fitness, generation, best_fitness, mean_fitness, execution_time = run_ga(generate_population,
+                                                                                             pop_size, fitness_function,
+                                                                                             stopping_criteria,
+                                                                                             offspring_size, selection,
+                                                                                             crossover, p_cross,
+                                                                                             mutation, p_mut,
+                                                                                             environmental_selection,
+                                                                                             dataset=dataset, *args,
+                                                                                             **kwargs)
         best_individual = best_solution(population, fitness)
         best_ind_c1 = c1(best_individual, dataset=dataset)
         best_ind_c2 = c2(best_individual, dataset=dataset)
@@ -709,7 +762,8 @@ def launch_experiment(seeds, dataset, generate_population, pop_size, fitness_fun
     print("Mean P2: " + str(mean(best_inds_p2)) + " " + u"\u00B1" + " " + str(stdev(best_inds_p2)))
     print("Mean P3: " + str(mean(best_inds_p3)) + " " + u"\u00B1" + " " + str(stdev(best_inds_p3)))
     print("Mean Execution Time: " + str(mean(execution_times)) + " " + u"\u00B1" + " " + str(stdev(execution_times)))
-    print("Mean Number of Generations: " + str(mean(last_generations)) + " " + u"\u00B1" + " " + str(stdev(last_generations)))
+    print("Mean Number of Generations: " + str(mean(last_generations)) + " " + u"\u00B1" + " " + str(
+        stdev(last_generations)))
     # Mostramos la evolución de la fitness para la mejor ejecución
     print("Best execution fitness evolution:")
     best_execution = best_inds_fitness.index(max(best_inds_fitness))
@@ -725,14 +779,16 @@ def launch_experiment(seeds, dataset, generate_population, pop_size, fitness_fun
 
     return best_individuals, best_inds_fitness, best_fitnesses, mean_fitnesses, last_generations, execution_times
 
+
 # Crear un conjunto de 31 semillas para los experimentos
-seeds = [1234567890 + i*23 for i in range(31)] # Semillas de ejemplo, cambiar por las semillas que se quieran
-launch_experiment(seeds, dataset1, generate_initial_population_timetabling, 50, fitness_timetabling, calculate_c1, calculate_c2,
-                  calculate_p1, calculate_p2, calculate_p3, generation_stop, 50, tournament_selection, one_point_crossover, 0.8,
+seeds = [1234567890 + i * 23 for i in range(31)]  # Semillas de ejemplo, cambiar por las semillas que se quieran
+launch_experiment(seeds, dataset1, generate_initial_population_timetabling, 50, fitness_timetabling, calculate_c1,
+                  calculate_c2,
+                  calculate_p1, calculate_p2, calculate_p3, generation_stop, 50, tournament_selection,
+                  one_point_crossover, 0.8,
                   uniform_mutation, 0.1, generational_replacement, max_gen=50, tournament_size=2)
 # Recuerda también mostrar el horario de la mejor solución obtenida en los casos peor, mejor y mediano
 
 ### Coloca aquí tus experimentos ###
 
 ### Coloca aquí tus experimentos ###
-'''
