@@ -73,7 +73,6 @@ def print_timetabling_solution(solution, dataset):
             print(f' {s}{" " * (max_len - len(s))}', end=' |')
         print()
 
-
 #                                                                          #
 ################################# NO TOCAR #################################
 
@@ -87,8 +86,8 @@ def create_timetable(solution, dataset):  # Crea una matriz con el num de asigna
     n_days = dataset['n_days']
 
     timetable = np.empty((n_hours_day, n_days), dtype=object)
-    for i in range(n_days):
-        for j in range(n_hours_day):
+    for i in range(n_hours_day):
+        for j in range(n_days):
             timetable[i][j] = []
 
     i = 0
@@ -127,9 +126,9 @@ def calculate_c2(solution, *args, **kwargs):
     for course in dataset['courses']:
         subject = course[0]
 
-        for j in range(dataset['n_hours_day']):
+        for j in range(dataset['n_days']):
             n_hours_per_subject_day = 0
-            for i in range(dataset['n_days']):
+            for i in range(dataset['n_hours_day']):
                 if subject in timetable[i][j]:
                     n_hours_per_subject_day += 1
                     if n_hours_per_subject_day > 2:
@@ -161,7 +160,7 @@ def calculate_p1(solution, *args, **kwargs):
     return gaps
 
 
-def calculate_p2(solution, *args, **kwargs):  # DA FALLOS
+def calculate_p2(solution, *args, **kwargs):
     dataset = kwargs['dataset']
     timetable = create_timetable(solution, dataset)
     days_used = 0
@@ -221,23 +220,6 @@ def fitness_timetabling(solution, *args, **kwargs):
     return fitness_value
 
 
-conflicts = calculate_c1(candidate, dataset=dataset)
-hours = calculate_c2(candidate, dataset=dataset)
-gaps = calculate_p1(candidate, dataset=dataset)
-days_used = calculate_p2(candidate, dataset=dataset)
-non_consecutive_subjects = calculate_p3(candidate, dataset=dataset)
-fitness_value = fitness_timetabling(candidate, dataset=dataset)  # Devuelve la fitness del candidato de ejemplo
-
-'''print()
-print("Conflicts", conflicts)
-print("More than 2 consecutive hours", hours)
-print("Gaps between subjects", gaps)
-print("Days used", days_used)
-print("Non consecutive subjects", non_consecutive_subjects)
-print("Fitness value: ", fitness_value)
-print()'''
-
-
 # Pistas:
 # - Una función que devuelva la tabla de horarios de una solución
 # - Una función que devuelva la cantidad de horas por día de cada asignatura
@@ -279,40 +261,19 @@ def tournament_selection(population, fitness, number_parents, *args, **kwargs):
 # - Crear una función auxiliar que genere un padre a partir de una selección por torneo
 # - Recuerda usar la misma librería de números aleatorios que en el resto del código
 
-'''
-#Comprobamos que funciona, pop size del ejemplo es 4 BORRAR LUEGO
-initial_population = generate_initial_population_timetabling(4,dataset=dataset)
-for i, candidate in enumerate(initial_population):
-    print(f"Timetable: {i + 1}:")
-    print_timetabling_solution(candidate, dataset=dataset)
-    print()
-
-parents = tournament_selection(initial_population, fitness_timetabling, 2, tournament_size=2, dataset=dataset)
-print("Parents:")
-for i, parent in enumerate(parents):
-    print(f"Parent {i + 1}:")
-    print_timetabling_solution(parent, dataset = dataset)
-    print()
-'''
-
-
 def one_point_crossover(parent1, parent2, p_cross, *args, **kwargs):
     # Realiza el cruce de dos padres con una probabilidad p_cross
-
-    child1 = parent1.copy()
-    child2 = parent2.copy()
-
     if random.random() >= p_cross:
-        return child1, child2
+        return parent1, parent2
 
-    cross_point = random.randint(1, len(child1) - 1)
+    cross_point = random.randint(1, len(parent1) - 1)
 
-    for i in range(cross_point, len(child1)):
-        aux = child1[i]
-        child1[i] = child2[i]
-        child2[i] = aux
+    for i in range(cross_point, len(parent1)):
+        aux = parent1[i]
+        parent1[i] = parent2[i]
+        parent2[i] = aux
 
-    return child1, child2
+    return parent1, parent2
 
 
 def uniform_mutation(chromosome, p_mut, *args, **kwargs):
@@ -435,7 +396,9 @@ def generate_initial_population_final(pop_size, *args, **kwargs):
         individual = np.zeros(individual_length, dtype=int)
 
         for j in range(individual_length):
-            individual[j] = alphabet_copy.pop(random.randint(0, individual_length - 1))
+            index = random.randint(0, len(alphabet_copy) - 1)
+            individual[j] = alphabet_copy[index]
+            alphabet_copy.pop(index)
 
         population.append(individual)
 
@@ -513,7 +476,7 @@ def change_values_cross_final(parent1, parent2, p_cross, *args, **kwargs):
     if random.random() >= p_cross:
         return child1, child2
 
-    cross_index = child1[random.randint(0, len(child1))]
+    cross_index = [random.randint(0, len(child1) - 1)]
     value1 = child1[cross_index]
     value2 = child2[cross_index]
 
@@ -538,6 +501,7 @@ Introduce solo valores nuevos al mutar para evitar conflictos.
 
 
 def only_new_values_mutation_final(chromosome, p_mut, *args, **kwargs):
+    dataset = kwargs['dataset']
     n_days = dataset['n_days']
     n_hours_days = dataset['n_hours_day']
 
@@ -546,13 +510,24 @@ def only_new_values_mutation_final(chromosome, p_mut, *args, **kwargs):
     not_in_chromosome = [x for x in alphabet if x not in chromosome]
 
     for i in range(len(chromosome)):
+        days_equal_subjects = False
+
         if random.random() >= p_mut:
             continue
 
-        chromosome[i] = not_in_chromosome.pop(random.randint(0, len(not_in_chromosome) - 1))
-
         if len(not_in_chromosome) == 0:
             not_in_chromosome = [x for x in alphabet if x not in chromosome]
+            if len(not_in_chromosome) == 0:
+                days_equal_subjects = True
+
+        if days_equal_subjects:
+            mutation_value = random.choice(alphabet)
+        elif len(not_in_chromosome) - 1 == 0:
+            mutation_value = not_in_chromosome.pop(0)
+        else:
+            mutation_value = not_in_chromosome.pop(random.randint(0, len(not_in_chromosome) - 1))
+
+        chromosome[i] = mutation_value
 
     return chromosome
 
@@ -569,16 +544,20 @@ def generational_replacement_final(population, fitness, offspring, fitness_offsp
     pop_fit.sort(key=lambda x: x[1])
 
     best_individual = pop_fit[-1][0]
+    best_fitness = pop_fit[-1][1]
 
-    off_fit = list(zip(population, fitness_offspring))
+    off_fit = list(zip(offspring, fitness_offspring))
 
     for i in range(len(offspring)):
         pop_fit[i] = off_fit[i]
 
     new_population, new_fitness = zip(*pop_fit)
+    new_population = list(new_population)
+    new_fitness = list(new_fitness)
 
     if len(new_population) + 1 < 100:
         new_population.append(best_individual)
+        new_fitness.append(best_fitness)
 
     return new_population, new_fitness
 
@@ -586,24 +565,28 @@ def generational_replacement_final(population, fitness, offspring, fitness_offsp
 ### Coloca aquí tus funciones de parada propuestas ###
 
 '''
-Para mejorar la condicion de parada añadimos la condicion de que pare cuando la mejor fitness 
-no haya mejorado en 4 generaciones. De tal forma evitamos seguir iterando sin conseguir mejores individuos
+Termina cuando llega al máximo de generaciones o cuando llega a la fitness optima.
 '''
 
 
 def generation_stop_final(generation, fitness, *args, **kwargs):
+    dataset = kwargs['dataset']
+    n_hours_days = dataset['n_hours_day']
+    courses = dataset['courses']
     max_gen = kwargs['max_gen']
-    max_fit_gen = max(fitness)
-    max_fit = 0
-    counter = -1
+    individual_length = sum(hours for _, hours in courses)
 
-    while True:
-        if max_fit_gen > max_fit:
-            counter += 1
-            if counter >= 3:
-                return False
-        yield generation >= max_gen
-        max_fit_gen = max(fitness)
+    not_full_day = 0 if individual_length % n_hours_days == 0 else 1
+
+    n_days_used_min = individual_length / n_hours_days + not_full_day
+
+    if max(fitness) >= 1 / (1 + n_days_used_min):
+        return True
+
+    if generation >= max_gen:
+        return True
+
+    return False
 
 
 ################################# NO TOCAR #################################
@@ -670,9 +653,6 @@ dataset6 = {"n_courses": 11,
             "n_hours_day": 12,
             "courses": [("IA", 2), ("ALG", 4), ("BD", 6), ("POO", 4), ("AC", 4), ("FP", 4), ("TP", 2), ("FC", 4),
                         ("TSO", 2), ("AM", 4), ("LMD", 4)]}
-
-import numpy as np
-import random
 
 
 def set_seed(seed):
@@ -791,4 +771,46 @@ launch_experiment(seeds, dataset1, generate_initial_population_timetabling, 50, 
 
 ### Coloca aquí tus experimentos ###
 
+seeds_first_approx = [34567890 + i * 23 for i in range(31)]
+dataset_first_approx = dataset1
+best_individuals, best_inds_fitness, best_fitnesses, mean_fitnesses, last_generations, execution_times = launch_experiment(
+    seeds_first_approx, dataset_first_approx, generate_initial_population_timetabling, 50, fitness_timetabling,
+    calculate_c1, calculate_c2,
+    calculate_p1, calculate_p2, calculate_p3, generation_stop, 50, tournament_selection, one_point_crossover, 0.8,
+    uniform_mutation, 0.1, generational_replacement, max_gen=50, tournament_size=2)
+
+'''
+# Mostramos el horario de la mejor solución de la mejor ejecución
+print("Best solution timetable from best execution:")
+best_execution = best_inds_fitness.index(max(best_inds_fitness))
+print_timetabling_solution(best_individuals[best_execution], dataset=dataset_first_approx)
+# Mostramos el horario de la mejor solución de la ejecución media
+print("Best solution timetable from mean execution:")
+median_execution = best_inds_fitness.index(median(best_inds_fitness))
+print_timetabling_solution(best_individuals[median_execution], dataset=dataset_first_approx)
+# Mostramos el horario de la mejor solución de la peor solución
+print("Best solution timetable from worst execution:")
+worst_execution = best_inds_fitness.index(min(best_inds_fitness))
+print_timetabling_solution(best_individuals[worst_execution], dataset=dataset_first_approx)
+'''
 ### Coloca aquí tus experimentos ###
+seeds_final_approx = [34567890 + i * 23 for i in range(31)]
+dataset_final_approx = dataset1
+best_individuals, best_inds_fitness, best_fitnesses, mean_fitnesses, last_generations, execution_times = launch_experiment(seeds_first_approx, dataset_first_approx, generate_initial_population_final, 50,
+                      fitness_timetabling_final, calculate_c1, calculate_c2,
+                      calculate_p1, calculate_p2, calculate_p3, generation_stop_final, 50, roulette_selection_final,
+                      change_values_cross_final, 0.8,
+                      only_new_values_mutation_final, 0.1, generational_replacement_final, max_gen=50)
+
+# Mostramos el horario de la mejor solución de la mejor ejecución
+print("Best solution timetable from best execution:")
+best_execution = best_inds_fitness.index(max(best_inds_fitness))
+print_timetabling_solution(best_individuals[best_execution], dataset=dataset_first_approx)
+# Mostramos el horario de la mejor solución de la ejecución media
+print("Best solution timetable from mean execution:")
+median_execution = best_inds_fitness.index(median(best_inds_fitness))
+print_timetabling_solution(best_individuals[median_execution], dataset=dataset_first_approx)
+# Mostramos el horario de la mejor solución de la peor solución
+print("Best solution timetable from worst execution:")
+worst_execution = best_inds_fitness.index(min(best_inds_fitness))
+print_timetabling_solution(best_individuals[worst_execution], dataset=dataset_first_approx)
