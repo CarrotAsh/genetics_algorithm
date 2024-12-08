@@ -73,6 +73,7 @@ def print_timetabling_solution(solution, dataset):
             print(f' {s}{" " * (max_len - len(s))}', end=' |')
         print()
 
+
 #                                                                          #
 ################################# NO TOCAR #################################
 
@@ -355,14 +356,15 @@ def genetic_algorithm(generate_population, pop_size, fitness_function, stopping_
                 child2 = mutation(child2, p_mut, *args, **kwargs)
                 offspring.append(child2)
 
-            # 7 - Evaluación de los descendientes
-            fitness_offspring = [fitness_function(x, *args, **kwargs) for x in offspring]
-            best_fitness.append(np.max(fitness_offspring))
-            mean_fitness.append(np.mean(fitness_offspring))
+        # 7 - Evaluación de los descendientes
+        fitness_offspring = [fitness_function(x, *args, **kwargs) for x in offspring]
 
-            # 8 - Generación de la nueva población con la función environmental_selection
-            population, fitness_values = environmental_selection(population, fitness_values, offspring,
-                                                                 fitness_offspring, *args, **kwargs)
+        # 8 - Generación de la nueva población con la función environmental_selection
+        population, fitness_values = environmental_selection(population, fitness_values, offspring, fitness_offspring,
+                                                             *args, **kwargs)
+
+        best_fitness.append(np.max(fitness_values))
+        mean_fitness.append(np.mean(fitness_values))
 
         generation += 1
 
@@ -779,7 +781,7 @@ best_individuals, best_inds_fitness, best_fitnesses, mean_fitnesses, last_genera
     calculate_p1, calculate_p2, calculate_p3, generation_stop, 50, tournament_selection, one_point_crossover, 0.8,
     uniform_mutation, 0.1, generational_replacement, max_gen=50, tournament_size=2)
 
-'''
+
 # Mostramos el horario de la mejor solución de la mejor ejecución
 print("Best solution timetable from best execution:")
 best_execution = best_inds_fitness.index(max(best_inds_fitness))
@@ -792,15 +794,17 @@ print_timetabling_solution(best_individuals[median_execution], dataset=dataset_f
 print("Best solution timetable from worst execution:")
 worst_execution = best_inds_fitness.index(min(best_inds_fitness))
 print_timetabling_solution(best_individuals[worst_execution], dataset=dataset_first_approx)
-'''
+
 ### Coloca aquí tus experimentos ###
+
 seeds_final_approx = [34567890 + i * 23 for i in range(31)]
 dataset_final_approx = dataset1
-best_individuals, best_inds_fitness, best_fitnesses, mean_fitnesses, last_generations, execution_times = launch_experiment(seeds_first_approx, dataset_first_approx, generate_initial_population_final, 50,
-                      fitness_timetabling_final, calculate_c1, calculate_c2,
-                      calculate_p1, calculate_p2, calculate_p3, generation_stop_final, 50, roulette_selection_final,
-                      change_values_cross_final, 0.8,
-                      only_new_values_mutation_final, 0.1, generational_replacement_final, max_gen=50)
+best_individuals, best_inds_fitness, best_fitnesses, mean_fitnesses, last_generations, execution_times = launch_experiment(
+    seeds_first_approx, dataset_first_approx, generate_initial_population_final, 50,
+    fitness_timetabling_final, calculate_c1, calculate_c2,
+    calculate_p1, calculate_p2, calculate_p3, generation_stop_final, 50, roulette_selection_final,
+    change_values_cross_final, 0.8,
+    only_new_values_mutation_final, 0.1, generational_replacement_final, max_gen=50)
 
 # Mostramos el horario de la mejor solución de la mejor ejecución
 print("Best solution timetable from best execution:")
