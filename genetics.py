@@ -489,6 +489,28 @@ def change_values_cross_final(parent1, parent2, p_cross, *args, **kwargs):
 
 ### Coloca aquí tus funciones de mutación propuestas ###
 
+'''
+Introduce solo valores nuevos al mutar para evitar conflictos.
+'''
+def only_new_values_mutation_final(chromosome, p_mut, *args, **kwargs):
+    n_days = dataset['n_days']
+    n_hours_days = dataset['n_hours_day']
+
+    alphabet = list(range(n_days * n_hours_days))
+
+    not_in_chromosome = [x for x in alphabet if x not in chromosome]
+
+    for i in range(len(chromosome)):
+        if random.random() >= p_mut:
+            continue
+
+        chromosome[i] = not_in_chromosome.pop(random.randint(0, len(not_in_chromosome) - 1))
+
+        if len(not_in_chromosome) == 0:
+            not_in_chromosome = [x for x in alphabet if x not in chromosome]
+
+    return chromosome
+
 ### Coloca aquí tus funciones de reemplazo propuestas ###
 
 ### Coloca aquí tus funciones de parada propuestas ###
