@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import random
 
@@ -401,6 +402,8 @@ en la cual se permite repetir valores.
 
 ### Coloca aquí tus funciones propuestas para la generación de población inicial ###
 def generate_initial_population_final(pop_size, *args, **kwargs):
+    dataset = kwargs['dataset']
+    courses = dataset['courses']
     population = []
 
     individual_length = sum(hours for _, hours in courses)
