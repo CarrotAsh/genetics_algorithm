@@ -449,6 +449,21 @@ def fitness_timetabling_final(solution, *args, **kwargs):
 
 ### Coloca aquí tus funciones de selección propuestas ###
 
+'''
+En este problema la seleccion por torneo genera bastantes repetidos cuando el numero de hijos es parecido al número 
+de padres, con seleccion por rueda de la fortuna damos mas oportunidades a individuos peores diversificando asi
+nuestra poblacion.
+'''
+def roulette_selection_final(population, fitness, number_parents, *args, **kwargs):
+
+    fitness_values = [fitness(individual, *args, **kwargs) for individual in population]
+
+    pop_fit = sum(fitness_values)
+    chromosome_probabilities = [f/pop_fit for f in fitness_values]
+    indices = np.random.choice(range(len(population)), number_parents, p=chromosome_probabilities)
+
+    return [population[i] for i in indices]
+
 ### Coloca aquí tus funciones de cruce propuestas ###
 
 '''
